@@ -20,9 +20,11 @@ import { ETIQUETAS_ZONA, INTERVALOS_ZONA } from '../domain/config/zonas.ts'
 import {
   detectarSintomas,
   efectoDeEfector,
+  efectoresOcupados,
   efectoresPermitidos,
-  puedeSeleccionarEfector,
+  motivoBloqueoEfector,
   validarDecision,
+  type MotivoBloqueo,
   type Sintomas,
 } from '../domain/engine/decision.ts'
 import { estimuloDelTurno, franjaDeTurno, jugadorActual } from '../domain/engine/partida.ts'
@@ -49,7 +51,7 @@ import type {
 import type { ControlError, EstadoJuego } from './gameStore.ts'
 
 export type { CausaBucle, Fase, IdEfector, Modo, TipoBucle, Variable, Zona } from '../domain/types.ts'
-export type { Sintomas } from '../domain/engine/decision.ts'
+export type { MotivoBloqueo, Sintomas } from '../domain/engine/decision.ts'
 
 // Selectores para la UI. Cada uno expone solo lo que la fase actual permite ver:
 // en ESTIMULO no hay estímulo, lecturas ni valores, para poder pasar el dispositivo.
@@ -263,13 +265,21 @@ export const selectEfectoresSeleccionados = (s: EstadoJuego): readonly IdEfector
 export interface VistaEfector {
   readonly id: IdEfector
   readonly nombre: string
+  /** Variable que regula su efecto principal (define el color de la carta). */
+  readonly regula: Variable
   readonly cambios: readonly Cambio[]
+  /** Cambio sobre la variable que regula. */
+  readonly principal: Cambio | null
+  /** Resto de cambios (efectos secundarios). */
+  readonly secundarios: readonly Cambio[]
   /** true si la deshidratación reduce su efecto (Sudar). */
   readonly reducidoPorDeshidratacion: boolean
   readonly ocupaTurnoCompleto: boolean
   readonly seleccionado: boolean
   /** false si marcarlo excedería los efectores permitidos. */
   readonly habilitado: boolean
+  /** Por qué no se puede marcar (null si se puede). */
+  readonly motivoBloqueo: MotivoBloqueo | null
 }
 
 const cartasEfectores = memorizar(
@@ -277,14 +287,21 @@ const cartasEfectores = memorizar(
     valores
       ? IDS_EFECTORES.map((id) => {
           const efecto = efectoDeEfector(id, valores)
+          const { regula } = EFECTORES[id]
+          const cambios = describirEfecto(efecto)
+          const motivoBloqueo = motivoBloqueoEfector(valores, seleccion, id)
           return {
             id,
             nombre: EFECTORES[id].nombre,
-            cambios: describirEfecto(efecto),
+            regula,
+            cambios,
+            principal: cambios.find((c) => c.variable === regula) ?? null,
+            secundarios: cambios.filter((c) => c.variable !== regula),
             reducidoPorDeshidratacion: efecto !== EFECTORES[id].efecto,
             ocupaTurnoCompleto: EFECTORES[id].ocupaTurnoCompleto,
             seleccionado: seleccion.includes(id),
-            habilitado: puedeSeleccionarEfector(valores, seleccion, id),
+            habilitado: motivoBloqueo === null,
+            motivoBloqueo,
           }
         })
       : null,
@@ -292,6 +309,23 @@ const cartasEfectores = memorizar(
 
 export const selectCartasEfectores = (s: EstadoJuego): VistaEfector[] | null =>
   cartasEfectores(valoresDeDecision(s), s.efectoresSeleccionados)
+
+export interface ContadorEfectores {
+  /** Cupo ocupado (Descansar ocupa todo el cupo). */
+  readonly elegidas: number
+  readonly permitidos: number
+}
+
+const contadorEfectores = memorizar(
+  (valores: Valores | null, seleccion: readonly IdEfector[]): ContadorEfectores | null =>
+    valores
+      ? { elegidas: efectoresOcupados(valores, seleccion), permitidos: efectoresPermitidos(valores) }
+      : null,
+)
+
+/** "Elegidas X/2" (o "X/1" con agotamiento) en LECTURA y DECISION. */
+export const selectContadorEfectores = (s: EstadoJuego): ContadorEfectores | null =>
+  contadorEfectores(valoresDeDecision(s), s.efectoresSeleccionados)
 
 const validacion = memorizar(
   (fase: Fase, valores: Valores | null, seleccion: readonly IdEfector[]): ResultadoValidacion | null =>

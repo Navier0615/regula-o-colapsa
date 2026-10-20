@@ -102,8 +102,12 @@ describe('PantallaTurno', () => {
     abrirPartida(['Ana'], { energia: 2 })
     fireEvent.click(boton('Revelar estímulo'))
     expect(screen.getByText('Tu organismo está agotado: solo puedes activar 1 efector')).toBeInTheDocument()
+    expect(screen.getByText('Elegidas 0/1')).toBeInTheDocument()
     fireEvent.click(boton(/^Beber agua/))
-    expect(boton(/^Comer/)).toBeDisabled()
+    expect(screen.getByText('Elegidas 1/1')).toBeInTheDocument()
+    const comer = boton(/^Comer/)
+    expect(comer).toHaveAttribute('aria-disabled', 'true')
+    expect(within(comer).getByText('Agotado: solo 1 efector')).toBeInTheDocument()
     expect(boton('Confirmar decisión')).toBeEnabled()
   })
 
@@ -118,7 +122,20 @@ describe('PantallaTurno', () => {
     // Síntoma en el aviso de los efectores y como motivo junto al botón de confirmar.
     expect(screen.getAllByText('Tu organismo está agotado: solo puedes activar 1 efector')).toHaveLength(2)
     expect(screen.queryByText(/≤/)).not.toBeInTheDocument()
-    expect(boton('Confirmar decisión')).toBeDisabled()
+    expect(within(boton(/^Sudar/)).getByText('Agotado: solo 1 efector')).toBeInTheDocument()
+    const contador = screen.getByText('Elegidas 2/1')
+    expect(contador).toHaveClass('bg-zona-roja-suave', 'text-zona-roja-texto')
+    expect(screen.getByText('Tu organismo se agotó: suelta 1 carta')).toBeInTheDocument()
+
+    // Al soltar una carta, el contador vuelve a estar completo y desaparece el aviso.
+    fireEvent.click(boton(/^Comer/))
+    expect(screen.getByText('Elegidas 1/1')).not.toHaveClass('bg-zona-roja-suave')
+    expect(screen.queryByText(/suelta 1 carta/)).not.toBeInTheDocument()
+    expect(boton('Confirmar decisión')).toBeEnabled()
+    // Con agotamiento, Comer ya no se puede volver a elegir.
+    fireEvent.click(boton(/^Comer/))
+    expect(boton(/^Comer/)).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('Elegidas 1/1')).toBeInTheDocument()
   })
 
   it('con deshidratación la carta Sudar muestra "Temperatura −1 (deshidratado)"', () => {
@@ -134,11 +151,71 @@ describe('PantallaTurno', () => {
     fireEvent.click(boton('Revelar estímulo'))
     fireEvent.click(boton(/^Beber agua/))
     fireEvent.click(boton(/^Comer/))
-    expect(boton(/^Sudar/)).toBeDisabled()
+    expect(boton(/^Sudar/)).toHaveAttribute('aria-disabled', 'true')
     // La UI deshabilita el tercer efector; se fuerza la acción para ver el error del store.
     act(() => useGameStore.getState().seleccionarEfector('sudar'))
     const efectores = screen.getByRole('region', { name: 'Efectores' })
     expect(within(efectores).getByRole('alert')).toHaveTextContent('No puedes activar más efectores en este turno.')
     expect(screen.getByRole('region', { name: 'Sensores' })).not.toContainElement(screen.getByRole('alert'))
+  })
+})
+
+describe('CartaEfector', () => {
+  const abrirDecision = (valores: Partial<Valores> = {}) => {
+    abrirPartida(['Ana'], valores)
+    fireEvent.click(boton('Revelar estímulo'))
+  }
+
+  it('cada carta es un botón con aria-pressed que se marca como "✓ Elegida"', () => {
+    abrirDecision()
+    const beber = boton(/^Beber agua/)
+    expect(beber).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('Elegidas 0/2')).toBeInTheDocument()
+
+    fireEvent.click(beber)
+    expect(boton(/^Beber agua/)).toHaveAttribute('aria-pressed', 'true')
+    expect(within(boton(/^Beber agua/)).getByText('✓ Elegida')).toBeInTheDocument()
+    expect(screen.getByText('Elegidas 1/2')).toBeInTheDocument()
+
+    fireEvent.click(boton(/^Beber agua/))
+    expect(boton(/^Beber agua/)).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByText('✓ Elegida')).not.toBeInTheDocument()
+  })
+
+  it('muestra el efecto principal con ▲/▼ y los secundarios como "efecto secundario"', () => {
+    abrirDecision()
+    const sudar = boton(/^Sudar/)
+    expect(within(sudar).getByText('▼ Temperatura −2')).toBeInTheDocument()
+    expect(within(sudar).getByText('Hidratación −1')).toBeInTheDocument()
+    expect(within(sudar).getByText('efecto secundario')).toBeInTheDocument()
+
+    const comer = boton(/^Comer/)
+    expect(within(comer).getByText('▲ Energía +1')).toBeInTheDocument()
+    expect(within(comer).getAllByText('efecto secundario')).toHaveLength(2)
+  })
+
+  it('Descansar es una "carta doble" y bloquea a las demás al elegirla', () => {
+    abrirDecision()
+    const descansar = boton(/^Descansar/)
+    expect(within(descansar).getByText('Carta doble')).toBeInTheDocument()
+
+    fireEvent.click(descansar)
+    expect(screen.getByText('Elegidas 2/2')).toBeInTheDocument()
+    const beber = boton(/^Beber agua/)
+    expect(beber).toHaveAttribute('aria-disabled', 'true')
+    expect(within(beber).getByText('Descansar ocupa todo el turno')).toBeInTheDocument()
+  })
+
+  it('una carta no disponible no se puede seleccionar', () => {
+    abrirDecision()
+    fireEvent.click(boton(/^Beber agua/))
+    fireEvent.click(boton(/^Comer/))
+    const sudar = boton(/^Sudar/)
+    expect(within(sudar).getByText('Ya elegiste 2 efectores')).toBeInTheDocument()
+
+    fireEvent.click(sudar)
+    expect(useGameStore.getState().efectoresSeleccionados).toEqual(['beber', 'comer'])
+    expect(sudar).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

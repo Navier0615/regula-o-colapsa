@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
+import { EFECTORES } from '../../src/domain/config/efectores.ts'
 import {
   aplicarEfectores,
   detectarSintomas,
   efectoDeEfector,
+  efectoresOcupados,
   efectoresPermitidos,
+  motivoBloqueoEfector,
   puedeSeleccionarEfector,
   validarDecision,
 } from '../../src/domain/engine/decision.ts'
@@ -105,6 +108,46 @@ describe('puedeSeleccionarEfector', () => {
     expect(puedeSeleccionarEfector(valores(), ['beber'], 'descansar')).toBe(false)
     expect(puedeSeleccionarEfector(valores(), ['descansar'], 'beber')).toBe(false)
     expect(puedeSeleccionarEfector(valores({ energia: 1 }), [], 'descansar')).toBe(true)
+  })
+})
+
+describe('motivoBloqueoEfector', () => {
+  it('null si se puede marcar o desmarcar', () => {
+    expect(motivoBloqueoEfector(valores(), [], 'beber')).toBeNull()
+    expect(motivoBloqueoEfector(valores(), ['beber', 'comer'], 'comer')).toBeNull()
+  })
+
+  it('limite con 2 efectores elegidos', () => {
+    expect(motivoBloqueoEfector(valores(), ['beber', 'comer'], 'sudar')).toBe('limite')
+  })
+
+  it('agotamiento con energía ≤ 2 y 1 efector elegido', () => {
+    expect(motivoBloqueoEfector(valores({ energia: 2 }), ['beber'], 'sudar')).toBe('agotamiento')
+  })
+
+  it('turno-completo si Descansar está elegido', () => {
+    expect(motivoBloqueoEfector(valores(), ['descansar'], 'beber')).toBe('turno-completo')
+  })
+
+  it('requiere-turno-libre si Descansar se pide con otra selección', () => {
+    expect(motivoBloqueoEfector(valores(), ['beber'], 'descansar')).toBe('requiere-turno-libre')
+  })
+})
+
+describe('efectoresOcupados', () => {
+  it('cuenta los elegidos y Descansar ocupa todo el cupo', () => {
+    expect(efectoresOcupados(valores(), [])).toBe(0)
+    expect(efectoresOcupados(valores(), ['beber'])).toBe(1)
+    expect(efectoresOcupados(valores(), ['descansar'])).toBe(2)
+    expect(efectoresOcupados(valores({ energia: 1 }), ['descansar'])).toBe(1)
+  })
+})
+
+describe('EFECTORES (configuración)', () => {
+  it('cada efector regula una variable que su efecto modifica', () => {
+    for (const efector of Object.values(EFECTORES)) {
+      expect(efector.efecto[efector.regula]).toBeDefined()
+    }
   })
 })
 

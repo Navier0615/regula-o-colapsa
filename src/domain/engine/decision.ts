@@ -54,6 +54,37 @@ export function detectarSintomas(valores: Valores): Sintomas {
 }
 
 /**
+ * Por qué un efector no se puede marcar ahora:
+ * - agotamiento: con agotamiento ya se eligió el único efector permitido.
+ * - limite: ya se eligieron los efectores del turno.
+ * - turno-completo: Descansar está elegido y ocupa todo el turno.
+ * - requiere-turno-libre: Descansar necesita la selección vacía.
+ */
+export type MotivoBloqueo = 'agotamiento' | 'limite' | 'turno-completo' | 'requiere-turno-libre'
+
+/** Motivo por el que el efector no se puede marcar, o null si se puede (o desmarcar). */
+export function motivoBloqueoEfector(
+  valores: Valores,
+  seleccion: readonly IdEfector[],
+  efector: IdEfector,
+): MotivoBloqueo | null {
+  if (seleccion.includes(efector)) {
+    return null
+  }
+  if (seleccion.some((id) => EFECTORES[id].ocupaTurnoCompleto)) {
+    return 'turno-completo'
+  }
+  if (EFECTORES[efector].ocupaTurnoCompleto) {
+    return seleccion.length === 0 ? null : 'requiere-turno-libre'
+  }
+  const permitidos = efectoresPermitidos(valores)
+  if (seleccion.length < permitidos) {
+    return null
+  }
+  return permitidos < EFECTORES_POR_TURNO ? 'agotamiento' : 'limite'
+}
+
+/**
  * Si el efector se puede marcar sin exceder lo permitido. Un efector ya
  * seleccionado siempre se puede desmarcar. Descansar solo se marca con la
  * selección vacía y, marcado, bloquea a los demás.
@@ -63,16 +94,12 @@ export function puedeSeleccionarEfector(
   seleccion: readonly IdEfector[],
   efector: IdEfector,
 ): boolean {
-  if (seleccion.includes(efector)) {
-    return true
-  }
-  if (seleccion.some((id) => EFECTORES[id].ocupaTurnoCompleto)) {
-    return false
-  }
-  if (EFECTORES[efector].ocupaTurnoCompleto) {
-    return seleccion.length === 0
-  }
-  return seleccion.length < efectoresPermitidos(valores)
+  return motivoBloqueoEfector(valores, seleccion, efector) === null
+}
+
+/** Cupo de efectores ocupado por la selección (Descansar ocupa todo el cupo). */
+export function efectoresOcupados(valores: Valores, seleccion: readonly IdEfector[]): number {
+  return seleccion.some((id) => EFECTORES[id].ocupaTurnoCompleto) ? efectoresPermitidos(valores) : seleccion.length
 }
 
 /** Efecto real de un efector; con deshidratación, sudar enfría menos. */

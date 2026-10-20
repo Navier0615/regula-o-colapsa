@@ -3,7 +3,7 @@ import {
   REGLAS_VISIBLES,
   selectCambiosEstimulo,
   selectCartasEfectores,
-  selectEfectoresPermitidos,
+  selectContadorEfectores,
   selectErrorDe,
   selectEstimuloActual,
   selectFase,
@@ -108,7 +108,8 @@ function Sensores() {
 
 function Decision() {
   const cartas = useGameStore(selectCartasEfectores)
-  const permitidos = useGameStore(selectEfectoresPermitidos)
+  const contador = useGameStore(selectContadorEfectores)
+  const permitidos = contador?.permitidos ?? null
   const validacion = useGameStore(selectValidacionDecision)
   const fase = useGameStore(selectFase)
   const errorEfectores = useGameStore(selectErrorDe('efectores'))
@@ -124,22 +125,40 @@ function Decision() {
 
   return (
     <section aria-labelledby="titulo-efectores" className="flex flex-col gap-3">
-      <div>
-        <h3 id="titulo-efectores" className="text-lg font-semibold">
-          Efectores
-        </h3>
-        <p className="text-sm text-texto-tenue">{instruccion}</p>
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+        <div>
+          <h3 id="titulo-efectores" className="text-lg font-semibold">
+            Efectores
+          </h3>
+          <p className="text-sm text-texto-tenue">{instruccion}</p>
+        </div>
+        {contador && (
+          // Sobra selección solo si el agotamiento llega tras elegir (al afinar).
+          <div aria-live="polite" className="flex shrink-0 flex-col items-end gap-1 text-right">
+            <p
+              className={`rounded-full px-3 py-1 text-sm font-semibold tabular-nums ${
+                contador.elegidas > contador.permitidos
+                  ? 'bg-zona-roja-suave text-zona-roja-texto ring-1 ring-zona-roja/50'
+                  : contador.elegidas === contador.permitidos
+                    ? 'bg-acento text-sobre-acento'
+                    : 'bg-elevado text-texto ring-1 ring-borde'
+              }`}
+            >
+              Elegidas {contador.elegidas}/{contador.permitidos}
+            </p>
+            {contador.elegidas > contador.permitidos && (
+              <p className="text-xs font-medium whitespace-nowrap text-zona-roja-texto">
+                Tu organismo se agotó: suelta {contador.elegidas - contador.permitidos} carta
+              </p>
+            )}
+          </div>
+        )}
       </div>
       <Sintomas />
       <MensajeError mensaje={errorEfectores} />
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-3 2xl:grid-cols-4">
         {cartas?.map((carta) => (
-          <CartaEfector
-            key={carta.id}
-            efector={carta}
-            efectoresPorTurno={efectoresPorTurno}
-            onAlternar={() => seleccionarEfector(carta.id)}
-          />
+          <CartaEfector key={carta.id} efector={carta} onAlternar={() => seleccionarEfector(carta.id)} />
         ))}
       </div>
       <div className="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-borde bg-fondo/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">

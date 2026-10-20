@@ -52,6 +52,8 @@ export interface Efector {
   readonly id: IdEfector
   readonly nombre: string
   readonly efecto: Efecto
+  /** Variable que regula su efecto principal; el resto de su efecto es secundario. */
+  readonly regula: Variable
   /** true si el efector ocupa todos los efectores del turno (Descansar). */
   readonly ocupaTurnoCompleto: boolean
 }

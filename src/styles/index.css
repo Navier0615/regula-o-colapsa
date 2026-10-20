@@ -41,6 +41,21 @@
   --color-estimulo: #7c3aed;
   --color-estimulo-texto: #6d28d9;
   --color-estimulo-suave: #ede9fe;
+
+  /*
+   * Categoría de las cartas de efector según la variable que regulan. Cada color sirve
+   * de fondo de la cabecera (con --color-sobre-cat encima) y de texto sobre la
+   * superficie: ambos ≥ 4.5:1 en los dos temas.
+   */
+  --color-cat-temperatura: #c2410c;
+  --color-cat-glucosa: #a16207;
+  --color-cat-hidratacion: #1d4ed8;
+  --color-cat-energia: #6d28d9;
+  --color-sobre-cat: #ffffff;
+
+  --color-sombra: rgb(15 23 42 / 0.12);
+  --shadow-carta: 0 1px 2px var(--color-sombra), 0 4px 12px var(--color-sombra);
+  --shadow-carta-elevada: 0 2px 4px var(--color-sombra), 0 12px 24px var(--color-sombra);
 }
 
 @layer base {
@@ -81,6 +96,14 @@
     --color-estimulo: #8b5cf6;
     --color-estimulo-texto: #c4b5fd;
     --color-estimulo-suave: #2e1065;
+
+    --color-cat-temperatura: #fb923c;
+    --color-cat-glucosa: #facc15;
+    --color-cat-hidratacion: #60a5fa;
+    --color-cat-energia: #a78bfa;
+    --color-sobre-cat: #020617;
+
+    --color-sombra: rgb(0 0 0 / 0.45);
   }
 
   html {

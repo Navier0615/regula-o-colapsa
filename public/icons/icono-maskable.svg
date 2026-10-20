@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Regula o Colapsa</title>
+  <rect width="512" height="512"  fill="#0f172a"/>
+  <g stroke-linecap="butt">
+  <path d="M 139.02 297.75 A 117 117 0 0 1 156.38 238.65" stroke="#f43f5e" stroke-width="35.88" fill="none"/>
+  <path d="M 158.81 234.87 A 117 117 0 0 1 205.36 194.53" stroke="#fbbf24" stroke-width="35.88" fill="none"/>
+  <path d="M 209.45 192.66 A 117 117 0 0 1 302.55 192.66" stroke="#34d399" stroke-width="35.88" fill="none"/>
+  <path d="M 306.64 194.53 A 117 117 0 0 1 353.19 234.87" stroke="#fbbf24" stroke-width="35.88" fill="none"/>
+  <path d="M 355.62 238.65 A 117 117 0 0 1 372.98 297.75" stroke="#f43f5e" stroke-width="35.88" fill="none"/>
+  <line x1="256" y1="300" x2="256" y2="214.98000000000002" stroke="#f1f5f9" stroke-width="14.040000000000001" stroke-linecap="round"/>
+  <circle cx="256" cy="300" r="20.28" fill="#f1f5f9"/>
+  <circle cx="256" cy="300" r="7.800000000000001" fill="#0f172a"/>
+  </g>
+</svg>

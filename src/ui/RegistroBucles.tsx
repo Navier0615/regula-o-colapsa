@@ -33,7 +33,7 @@ interface Props {
 
 export default function RegistroBucles({ bucles }: Props) {
   if (bucles.length === 0) {
-    return <p className="text-sm text-slate-400">No se activó ningún bucle de retroalimentación.</p>
+    return <p className="text-sm text-texto-tenue">No se activó ningún bucle de retroalimentación.</p>
   }
   return (
     <ul className="flex flex-col gap-2">
@@ -43,17 +43,17 @@ export default function RegistroBucles({ bucles }: Props) {
         return (
           <li
             key={`${bucle.causa}-${bucle.variable}`}
-            className={`rounded-xl border p-3 ${positivo ? 'border-amber-500/40 bg-amber-950/30' : 'border-emerald-500/40 bg-emerald-950/30'}`}
+            className={`rounded-xl border p-3 ${positivo ? 'border-zona-amarilla/50 bg-zona-amarilla-suave' : 'border-zona-verde/50 bg-zona-verde-suave'}`}
           >
             <p className="flex flex-wrap items-center gap-2 font-semibold">
               {titulo}
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${positivo ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-400/15 text-emerald-300'}`}
+                className={`rounded-full border px-2 py-0.5 text-xs font-medium ${positivo ? 'border-zona-amarilla/50 text-zona-amarilla-texto' : 'border-zona-verde/50 text-zona-verde-texto'}`}
               >
                 {positivo ? 'Bucle positivo' : 'Bucle negativo'}
               </span>
             </p>
-            <p className="mt-1 text-sm text-slate-300">{detalle}</p>
+            <p className="mt-1 text-sm text-texto-suave">{detalle}</p>
           </li>
         )
       })}

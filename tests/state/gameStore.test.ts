@@ -16,6 +16,7 @@ import {
   selectNombreJugadorActivo,
   selectPuedeAfinar,
   selectRanking,
+  selectResumenTurno,
   selectTurno,
   selectUltimoRegistro,
   selectValidacionDecision,
@@ -137,6 +138,12 @@ describe('flujo de fases', () => {
     const registro = selectUltimoRegistro(estado())!
     expect(registro.turno).toBe(1)
     expect(registro.efectores).toEqual(['beber', 'comer'])
+    const resumen = selectResumenTurno(estado())!
+    expect(resumen.zonasFinales.map((z) => z.variable)).toEqual(['temperatura', 'glucosa', 'hidratacion', 'energia'])
+    resumen.zonasFinales.forEach((z) => {
+      expect(Object.keys(z).sort()).toEqual(['etiquetaZona', 'nombre', 'variable', 'zona'])
+      expect(['verde', 'alerta', 'crisis']).toContain(z.etiquetaZona)
+    })
     expect(selectLecturas(estado())).toBeNull()
   })
 
@@ -210,12 +217,12 @@ describe('síntomas y revalidación', () => {
     expect(selectEfectoresSeleccionados(estado())).toEqual(['beber', 'comer'])
     const validacion = selectValidacionDecision(estado())
     expect(validacion?.valida).toBe(false)
-    expect(validacion?.valida === false && validacion.motivo).toMatch(/Agotamiento/)
+    expect(validacion?.valida === false && validacion.motivo).toMatch(/agotado/)
     expect(selectSintomas(estado())?.agotamiento).toBe(true)
 
     acciones().confirmarDecision()
     expect(selectFase(estado())).toBe('DECISION')
-    expect(selectErrorDe('decision')(estado())).toMatch(/Agotamiento/)
+    expect(selectErrorDe('decision')(estado())).toMatch(/agotado/)
   })
 
   it('con agotamiento solo deja marcar 1 efector y deshabilita los demás', () => {

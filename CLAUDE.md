@@ -184,6 +184,9 @@ CONFIGURACION → ESTIMULO → LECTURA → DECISION → RETROALIMENTACION →
 - Las zonas se indican con color Y con texto (verde / alerta / crisis).
 - Lecturas no afinadas se muestran como "≈ 7 ±1"; afinadas como "= 7 real".
 - Al pasar de un jugador a otro, ocultar el estímulo y los valores del jugador anterior.
+- Retroalimentación: muestra la zona final de cada variable (verde / alerta / crisis,
+  con color y texto), nunca su valor numérico. Los valores exactos solo se revelan en
+  la gráfica final (FIN_DEL_DIA).
 - Todo el texto de la interfaz en español. Título visible: "Regula o Colapsa".
 - Síntomas: las restricciones se muestran como síntomas cualitativos, nunca con el
   valor real de la variable.

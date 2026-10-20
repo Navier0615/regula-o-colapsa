@@ -1,27 +1,68 @@
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import { CartesianGrid, Line, LineChart, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { REGLAS_VISIBLES, type PuntoEvolucion, type Variable } from '../state/selectors.ts'
 
-// Colores categóricos fijos por variable (paleta validada para fondo oscuro).
-const COLORES: Readonly<Record<Variable, string>> = {
-  temperatura: '#d95926',
-  glucosa: '#3987e5',
-  hidratacion: '#199e70',
-  energia: '#c98500',
-}
+// Una mini gráfica por variable (múltiplos pequeños): cada una tiene una sola serie,
+// así que la identidad la da el título y no el color. Los colores salen de los
+// tokens del tema, por lo que funcionan en claro y oscuro.
 
-const { rango, totalTurnos, variables, nombresVariables, intervalosZona } = REGLAS_VISIBLES
+const { rango, totalTurnos, variables, nombresVariables, intervalosZona, puntoDeAjuste } = REGLAS_VISIBLES
 const verde = intervalosZona.find((tramo) => tramo.zona === 'verde')!
-const TICKS_Y = Array.from({ length: rango.max / 2 + 1 }, (_, i) => rango.min + i * 2)
+const TICKS_X = Array.from({ length: totalTurnos + 1 }, (_, i) => i)
+const TICKS_Y = [rango.min, puntoDeAjuste, rango.max]
+const EJE = { fill: 'var(--color-texto-tenue)', fontSize: 11 }
+
+function MiniGrafica({ variable, evolucion }: { variable: Variable; evolucion: readonly PuntoEvolucion[] }) {
+  const final = evolucion.at(-1)?.[variable]
+  return (
+    <div className="rounded-xl border border-borde p-3">
+      <p className="flex items-baseline justify-between text-sm">
+        <span className="font-semibold">{nombresVariables[variable]}</span>
+        <span className="text-texto-tenue">
+          final <span className="font-semibold text-texto tabular-nums">{final}</span>
+        </span>
+      </p>
+      <div className="h-32 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={[...evolucion]} margin={{ top: 8, right: 8, bottom: 0, left: -28 }}>
+            <CartesianGrid stroke="var(--color-borde)" strokeDasharray="2 4" vertical={false} />
+            <ReferenceArea y1={verde.min} y2={verde.max} fill="var(--color-zona-verde)" fillOpacity={0.15} />
+            <XAxis
+              dataKey="turno"
+              type="number"
+              domain={[0, totalTurnos]}
+              ticks={TICKS_X}
+              tick={EJE}
+              stroke="var(--color-borde-fuerte)"
+              tickLine={false}
+            />
+            <YAxis domain={[rango.min, rango.max]} ticks={TICKS_Y} tick={EJE} axisLine={false} tickLine={false} />
+            <Tooltip
+              labelFormatter={(turno) => (turno === 0 ? 'Inicio' : `Turno ${String(turno)}`)}
+              formatter={(valor) => [String(valor), nombresVariables[variable]]}
+              contentStyle={{
+                background: 'var(--color-superficie)',
+                border: '1px solid var(--color-borde)',
+                borderRadius: 12,
+              }}
+              labelStyle={{ color: 'var(--color-texto)', fontWeight: 600 }}
+              itemStyle={{ color: 'var(--color-texto-suave)' }}
+              cursor={{ stroke: 'var(--color-borde-fuerte)' }}
+            />
+            <Line
+              dataKey={variable}
+              name={nombresVariables[variable]}
+              stroke="var(--color-acento)"
+              strokeWidth={2}
+              dot={{ r: 4, strokeWidth: 2, stroke: 'var(--color-superficie)', fill: 'var(--color-acento)' }}
+              activeDot={{ r: 6 }}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
 
 interface Props {
   nombre: string
@@ -30,60 +71,20 @@ interface Props {
 
 export default function GraficaEvolucion({ nombre, evolucion }: Props) {
   return (
-    <figure className="flex flex-col gap-2">
-      <figcaption className="text-sm text-slate-400">
-        Valores reales de {nombre} al final de cada turno (franja sombreada: zona verde)
+    <figure className="flex flex-col gap-3">
+      <figcaption className="text-sm text-texto-tenue">
+        Valores reales de {nombre} al final de cada turno (0 = inicio). Franja sombreada: zona verde.
       </figcaption>
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={[...evolucion]} margin={{ top: 8, right: 12, bottom: 0, left: -20 }}>
-            <CartesianGrid stroke="#334155" strokeDasharray="2 4" vertical={false} />
-            <ReferenceArea y1={verde.min} y2={verde.max} fill="#10b981" fillOpacity={0.12} ifOverflow="extendDomain" />
-            <XAxis
-              dataKey="turno"
-              type="number"
-              domain={[0, totalTurnos]}
-              ticks={Array.from({ length: totalTurnos + 1 }, (_, i) => i)}
-              stroke="#94a3b8"
-              tick={{ fill: '#94a3b8', fontSize: 12 }}
-              tickLine={false}
-            />
-            <YAxis
-              domain={[rango.min, rango.max]}
-              ticks={TICKS_Y}
-              stroke="#94a3b8"
-              tick={{ fill: '#94a3b8', fontSize: 12 }}
-              tickLine={false}
-              axisLine={false}
-            />
-            <Tooltip
-              labelFormatter={(turno) => (turno === 0 ? 'Inicio' : `Turno ${String(turno)}`)}
-              contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12 }}
-              labelStyle={{ color: '#f1f5f9', fontWeight: 600 }}
-              itemStyle={{ color: '#e2e8f0' }}
-              cursor={{ stroke: '#64748b' }}
-            />
-            <Legend wrapperStyle={{ fontSize: 12, color: '#cbd5e1' }} />
-            {variables.map((variable) => (
-              <Line
-                key={variable}
-                dataKey={variable}
-                name={nombresVariables[variable]}
-                stroke={COLORES[variable]}
-                strokeWidth={2}
-                dot={{ r: 4, strokeWidth: 2, stroke: '#0f172a', fill: COLORES[variable] }}
-                activeDot={{ r: 6 }}
-                isAnimationActive={false}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {variables.map((variable) => (
+          <MiniGrafica key={variable} variable={variable} evolucion={evolucion} />
+        ))}
       </div>
-      <details className="text-sm text-slate-300">
-        <summary className="min-h-11 cursor-pointer content-center text-sky-300">Ver tabla de valores</summary>
+      <details className="text-sm text-texto-suave">
+        <summary className="min-h-11 cursor-pointer content-center text-enlace">Ver tabla de valores</summary>
         <div className="overflow-x-auto">
           <table className="mt-2 w-full text-left">
-            <thead className="text-slate-400">
+            <thead className="text-texto-tenue">
               <tr>
                 <th scope="col" className="py-1 pr-3 font-medium">Turno</th>
                 {variables.map((variable) => (

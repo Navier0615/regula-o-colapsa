@@ -9,7 +9,7 @@ const verde = R.intervalosZona.find((t) => t.zona === 'verde')!
 
 function Seccion({ titulo, children }: { titulo: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
+    <section className="flex flex-col gap-3 rounded-2xl border border-borde bg-superficie p-4 sm:p-6">
       <h2 className="text-xl font-bold">{titulo}</h2>
       {children}
     </section>
@@ -18,11 +18,11 @@ function Seccion({ titulo, children }: { titulo: string; children: ReactNode }) 
 
 const FASES: { nombre: string; detalle: string }[] = [
   {
-    nombre: 'Estímulo',
+    nombre: 'Estímulo del entorno',
     detalle: 'El entorno perturba tu organismo (calor, ayuno, ejercicio…). Cada jugador recibe los mismos estímulos en distinto orden.',
   },
   {
-    nombre: 'Lectura',
+    nombre: 'Lectura de sensores',
     detalle: `Ves lecturas con ruido de los sensores, no los valores reales: ±${ruidoInicial?.margen} en los turnos 1–${ruidoInicial?.hastaTurno} y ±${ruidoFinal?.margen} después. Puedes afinar un sensor por turno para ver su valor real (cuesta ${R.costoAfinar} de energía).`,
   },
   {
@@ -30,11 +30,11 @@ const FASES: { nombre: string; detalle: string }[] = [
     detalle: `Activas ${R.efectoresPorTurno} efectores distintos, o Descansar, que ocupa todo el turno.`,
   },
   {
-    nombre: 'Retroalimentación',
+    nombre: 'Retroalimentación del sistema',
     detalle: 'Se aplican los efectores y los bucles de retroalimentación de tu organismo.',
   },
   {
-    nombre: 'Puntuación',
+    nombre: 'Puntuación del turno',
     detalle: 'Cada variable puntúa según la zona en que termina el turno.',
   },
 ]
@@ -50,7 +50,7 @@ export default function InstruccionesPage() {
       </header>
 
       <Seccion titulo="Objetivo">
-        <p className="text-slate-300">
+        <p className="text-texto-suave">
           Eres el centro de control de un organismo. Mantén {R.variables.map((v) => R.nombresVariables[v].toLowerCase()).join(', ')}{' '}
           cerca de su punto de ajuste ({R.puntoDeAjuste}, en una escala de {R.rango.min} a {R.rango.max}) durante{' '}
           {R.totalTurnos} turnos: mañana, tarde y noche.
@@ -72,16 +72,16 @@ export default function InstruccionesPage() {
         <ol className="flex flex-col gap-3">
           {FASES.map((fase, i) => (
             <li key={fase.nombre} className="flex gap-3">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-sky-400 font-bold text-slate-950">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-acento font-bold text-sobre-acento">
                 {i + 1}
               </span>
-              <p className="text-slate-300">
-                <strong className="text-slate-100">{fase.nombre}.</strong> {fase.detalle}
+              <p className="text-texto-suave">
+                <strong className="text-texto">{fase.nombre}.</strong> {fase.detalle}
               </p>
             </li>
           ))}
         </ol>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-texto-tenue">
           En multijugador, todos juegan el turno N antes de pasar al N+1. Antes de cada turno aparece “Turno de
           &lt;nombre&gt;” para pasar el dispositivo sin ver la jugada anterior.
         </p>
@@ -90,32 +90,32 @@ export default function InstruccionesPage() {
       <Seccion titulo="Efectores">
         <ul className="grid gap-2 sm:grid-cols-2">
           {CATALOGO_EFECTORES.map((efector) => (
-            <li key={efector.id} className="rounded-xl border border-slate-800 p-3">
+            <li key={efector.id} className="rounded-xl border border-borde p-3">
               <p className="font-semibold">{efector.nombre}</p>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-texto-suave">
                 {efector.cambios.map(formatearCambio).join(' · ')}
                 {efector.ocupaTurnoCompleto && ` · ocupa los ${R.efectoresPorTurno} efectores`}
               </p>
             </li>
           ))}
         </ul>
-        <ul className="flex flex-col gap-1 text-sm text-slate-300">
+        <ul className="flex flex-col gap-1 text-sm text-texto-suave">
           <li>
-            <strong className="text-slate-100">Agotamiento</strong> (energía ≤ {R.agotamiento.umbral}): solo puedes
+            <strong className="text-texto">Agotamiento</strong> (energía ≤ {R.agotamiento.umbral}): solo puedes
             activar {R.agotamiento.efectoresPermitidos} efector (o Descansar).
           </li>
           <li>
-            <strong className="text-slate-100">Deshidratación</strong> (hidratación ≤ {R.deshidratacion.umbral}):
+            <strong className="text-texto">Deshidratación</strong> (hidratación ≤ {R.deshidratacion.umbral}):
             sudar baja la temperatura solo {formatearDelta(R.deshidratacion.efectoSudarTemperatura)}.
           </li>
         </ul>
       </Seccion>
 
       <Seccion titulo="Bucles de retroalimentación">
-        <p className="text-slate-300">
-          <strong className="text-amber-300">Bucles positivos</strong> amplifican el desequilibrio:
+        <p className="text-texto-suave">
+          <strong className="text-zona-amarilla-texto">Bucles positivos</strong> amplifican el desequilibrio:
         </p>
-        <ul className="list-disc space-y-1 pl-5 text-sm text-slate-300">
+        <ul className="list-disc space-y-1 pl-5 text-sm text-texto-suave">
           <li>
             Fiebre: si la temperatura llega a {R.fiebre.umbral} o más, sube {formatearDelta(R.fiebre.incremento)} más.
           </li>
@@ -125,14 +125,14 @@ export default function InstruccionesPage() {
           </li>
           <li>Deshidratación y agotamiento al final del turno limitan tus opciones en el siguiente.</li>
         </ul>
-        <p className="text-slate-300">
-          <strong className="text-emerald-300">Bucles negativos</strong> son la regulación exitosa: una variable que el
+        <p className="text-texto-suave">
+          <strong className="text-zona-verde-texto">Bucles negativos</strong> son la regulación exitosa: una variable que el
           estímulo sacó de la zona verde y tú devolviste a ella.
         </p>
       </Seccion>
 
       <Seccion titulo="Puntuación">
-        <ul className="list-disc space-y-1 pl-5 text-slate-300">
+        <ul className="list-disc space-y-1 pl-5 text-texto-suave">
           <li>
             Por cada variable al final del turno: verde {formatearDelta(R.puntosPorZona.verde)}, alerta{' '}
             {formatearDelta(R.puntosPorZona.amarilla)}, crisis {formatearDelta(R.puntosPorZona.roja)}.
@@ -145,17 +145,17 @@ export default function InstruccionesPage() {
       </Seccion>
 
       <Seccion titulo="Colapso y victoria">
-        <ul className="list-disc space-y-1 pl-5 text-slate-300">
+        <ul className="list-disc space-y-1 pl-5 text-texto-suave">
           <li>
             Si alguna variable termina un turno en {R.valoresColapso.join(' o ')}, tu organismo colapsa. En solitario
             la partida termina; en multijugador quedas fuera y conservas tus puntos.
           </li>
           <li>
-            <strong className="text-slate-100">Solitario:</strong> ganas con {R.puntajeVictoria} puntos o más sin
+            <strong className="text-texto">Solitario:</strong> ganas con {R.puntajeVictoria} puntos o más sin
             colapsar.
           </li>
           <li>
-            <strong className="text-slate-100">Multijugador:</strong> gana el mayor puntaje. Desempate: menos
+            <strong className="text-texto">Multijugador:</strong> gana el mayor puntaje. Desempate: menos
             variables en crisis a lo largo del día; luego más energía final.
           </li>
         </ul>

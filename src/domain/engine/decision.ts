@@ -28,9 +28,10 @@ export function validarDecision(valores: Valores, efectores: readonly IdEfector[
 
   const permitidos = efectoresPermitidos(valores)
   if (efectores.length !== permitidos) {
+    // Con agotamiento se informa el síntoma, nunca el umbral ni el valor real.
     const motivo =
       permitidos < EFECTORES_POR_TURNO
-        ? `Agotamiento: con energía ≤ ${AGOTAMIENTO.umbral} solo puedes elegir ${permitidos} efector.`
+        ? `Tu organismo está agotado: solo puedes activar ${permitidos} efector`
         : `Debes elegir ${permitidos} efectores distintos.`
     return { valida: false, motivo }
   }

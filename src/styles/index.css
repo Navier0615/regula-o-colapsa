@@ -1,12 +1,86 @@
 @import "tailwindcss";
 
+/* El tema se fija en <html data-theme="light|dark"> (ver index.html y src/ui/tema.ts). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Tokens de color por rol. Los valores de @theme son el tema claro; el tema oscuro
+ * los redefine más abajo. Contraste verificado (WCAG): texto ≥ 4.5:1 sobre fondo,
+ * superficie y fondos suaves de zona; puntos de zona ≥ 3:1 sobre la superficie.
+ */
 @theme {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --color-fondo: #f1f5f9;
+  --color-superficie: #ffffff;
+  --color-elevado: #e2e8f0;
+  --color-elevado-hover: #cbd5e1;
+  --color-borde: #cbd5e1;
+  --color-borde-fuerte: #64748b;
+
+  --color-texto: #0f172a;
+  --color-texto-suave: #334155;
+  --color-texto-tenue: #475569;
+
+  --color-acento: #0369a1;
+  --color-acento-hover: #075985;
+  --color-sobre-acento: #ffffff;
+  --color-enlace: #0369a1;
+  --color-acento-suave: #e0f2fe;
+
+  --color-zona-verde: #059669;
+  --color-zona-verde-texto: #047857;
+  --color-zona-verde-suave: #d1fae5;
+  --color-zona-amarilla: #d97706;
+  --color-zona-amarilla-texto: #92400e;
+  --color-zona-amarilla-suave: #fef3c7;
+  --color-zona-roja: #e11d48;
+  --color-zona-roja-texto: #be123c;
+  --color-zona-roja-suave: #ffe4e6;
+
+  --color-estimulo: #7c3aed;
+  --color-estimulo-texto: #6d28d9;
+  --color-estimulo-suave: #ede9fe;
 }
 
 @layer base {
   :root {
+    color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
     color-scheme: dark;
+
+    --color-fondo: #020617;
+    --color-superficie: #0f172a;
+    --color-elevado: #1e293b;
+    --color-elevado-hover: #334155;
+    --color-borde: #1e293b;
+    --color-borde-fuerte: #64748b;
+
+    --color-texto: #f1f5f9;
+    --color-texto-suave: #cbd5e1;
+    --color-texto-tenue: #94a3b8;
+
+    --color-acento: #38bdf8;
+    --color-acento-hover: #7dd3fc;
+    --color-sobre-acento: #020617;
+    --color-enlace: #7dd3fc;
+    --color-acento-suave: #082f49;
+
+    --color-zona-verde: #34d399;
+    --color-zona-verde-texto: #6ee7b7;
+    --color-zona-verde-suave: #064e3b;
+    --color-zona-amarilla: #fbbf24;
+    --color-zona-amarilla-texto: #fcd34d;
+    --color-zona-amarilla-suave: #451a03;
+    --color-zona-roja: #f43f5e;
+    --color-zona-roja-texto: #fda4af;
+    --color-zona-roja-suave: #4c0519;
+
+    --color-estimulo: #8b5cf6;
+    --color-estimulo-texto: #c4b5fd;
+    --color-estimulo-suave: #2e1065;
   }
 
   html {
@@ -14,10 +88,10 @@
   }
 
   body {
-    @apply min-h-dvh bg-slate-950 text-slate-100 antialiased;
+    @apply min-h-dvh bg-fondo text-texto antialiased;
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-sky-400;
+    @apply outline-2 outline-offset-2 outline-acento;
   }
 }

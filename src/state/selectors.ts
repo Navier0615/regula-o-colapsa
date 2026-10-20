@@ -317,8 +317,18 @@ export interface VistaBucle {
   readonly nombreVariable: string
 }
 
+/** Zona de una variable al final del turno, sin su valor numérico. */
+export interface VistaZonaFinal {
+  readonly variable: Variable
+  readonly nombre: string
+  readonly zona: Zona
+  readonly etiquetaZona: string
+}
+
 export interface ResumenTurno {
   readonly nombreJugador: string
+  /** Zonas finales de las 4 variables; los valores exactos solo se revelan al final. */
+  readonly zonasFinales: readonly VistaZonaFinal[]
   readonly turno: number
   readonly estimulo: string
   readonly efectores: readonly string[]
@@ -333,6 +343,10 @@ const resumenTurno = memorizar((registro: RegistroTurno | null, jugador: Jugador
   registro && jugador
     ? {
         nombreJugador: jugador.nombre,
+        zonasFinales: VARIABLES.map((variable) => {
+          const zona = zonaDe(registro.valoresFinales[variable])
+          return { variable, nombre: NOMBRES_VARIABLES[variable], zona, etiquetaZona: ETIQUETAS_ZONA[zona] }
+        }),
         turno: registro.turno,
         estimulo: ESTIMULOS[registro.estimulo].nombre,
         efectores: registro.efectores.map((id) => EFECTORES[id].nombre),

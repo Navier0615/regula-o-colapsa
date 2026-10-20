@@ -9,7 +9,11 @@ export default function MensajeError({ mensaje, id }: Props) {
     return null
   }
   return (
-    <p id={id} role="alert" className="rounded-lg border border-rose-500/40 bg-rose-950/60 px-3 py-2 text-sm text-rose-200">
+    <p
+      id={id}
+      role="alert"
+      className="rounded-lg border border-zona-roja/50 bg-zona-roja-suave px-3 py-2 text-sm text-zona-roja-texto"
+    >
       {mensaje}
     </p>
   )

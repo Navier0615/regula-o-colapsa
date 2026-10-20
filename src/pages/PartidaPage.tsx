@@ -31,13 +31,13 @@ export default function PartidaPage() {
   const codigo = useGameStore(selectCodigo)
   return (
     <div className="flex flex-col gap-6">
-      <nav className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <Link to="/" className="flex min-h-11 items-center font-bold text-slate-100">
+      <nav className="flex items-center justify-between gap-3 border-b border-borde pb-3">
+        <Link to="/" className="flex min-h-11 items-center font-bold text-texto">
           Regula o Colapsa
         </Link>
         {codigo && (
-          <p className="text-sm text-slate-400">
-            Código <span className="font-mono text-slate-200">{codigo}</span>
+          <p className="text-sm text-texto-tenue">
+            Código <span className="font-mono text-texto">{codigo}</span>
           </p>
         )}
       </nav>

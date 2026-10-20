@@ -4,9 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#020617" />
     <meta name="description" content="Juego educativo de homeostasis para Teoría General de Sistemas" />
     <title>Regula o Colapsa</title>
+    <script>
+      // Tema inicial antes de pintar (evita el destello): elección guardada o el del sistema.
+      // La misma lógica vive en src/ui/tema.ts.
+      ;(function () {
+        var tema = null
+        try {
+          tema = localStorage.getItem('regula-o-colapsa-tema')
+        } catch (e) {}
+        if (tema !== 'claro' && tema !== 'oscuro') {
+          tema = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro'
+        }
+        document.documentElement.dataset.theme = tema === 'oscuro' ? 'dark' : 'light'
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', tema === 'oscuro' ? '#020617' : '#f1f5f9')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

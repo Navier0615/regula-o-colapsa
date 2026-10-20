@@ -155,7 +155,7 @@ describe('afinarSensor', () => {
     // Energía 3 tras el estímulo; al afinar baja a 2 y aplica el agotamiento.
     let partida = conJugador(partidaDePrueba(['A']), 0, { valores: { ...VALORES_INICIALES, energia: 3 } })
     partida = pasarADecision(afinarSensor(revelarEstimulo(partida), 'temperatura'))
-    expect(() => confirmarDecision(partida, ['beber', 'comer'])).toThrow(/Agotamiento/)
+    expect(() => confirmarDecision(partida, ['beber', 'comer'])).toThrow(/agotado/)
     expect(confirmarDecision(partida, ['beber']).fase).toBe('RETROALIMENTACION')
   })
 })

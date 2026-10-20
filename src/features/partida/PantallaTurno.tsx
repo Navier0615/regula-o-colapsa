@@ -36,11 +36,11 @@ function CambioDeJugador() {
 
   return (
     <section className="mx-auto flex max-w-md flex-col items-center gap-6 py-10 text-center">
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-texto-tenue">
         Turno {turno} de {totalTurnos} · {franja}
       </p>
       <h2 className="text-3xl font-bold">Turno de {nombre}</h2>
-      <p className="text-slate-300">
+      <p className="text-texto-suave">
         Pasa el dispositivo a {nombre}. El estímulo y las lecturas solo se muestran al revelarlo.
       </p>
       <div className="flex w-full flex-col gap-3">
@@ -58,12 +58,12 @@ function Sintomas() {
   return (
     <div aria-live="polite" className="flex flex-col gap-2 empty:hidden">
       {sintomas?.agotamiento && (
-        <p className="rounded-xl border border-amber-500/40 bg-amber-950/40 px-3 py-2 text-sm font-medium text-amber-200">
+        <p className="rounded-xl border border-zona-amarilla/50 bg-zona-amarilla-suave px-3 py-2 text-sm font-medium text-zona-amarilla-texto">
           Tu organismo está agotado: solo puedes activar 1 efector
         </p>
       )}
       {sintomas?.deshidratacion && (
-        <p className="rounded-xl border border-amber-500/40 bg-amber-950/40 px-3 py-2 text-sm font-medium text-amber-200">
+        <p className="rounded-xl border border-zona-amarilla/50 bg-zona-amarilla-suave px-3 py-2 text-sm font-medium text-zona-amarilla-texto">
           Tu organismo está deshidratado: sudar enfría menos
         </p>
       )}
@@ -83,7 +83,7 @@ function Sensores() {
         <h3 id="titulo-sensores" className="text-lg font-semibold">
           Sensores
         </h3>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-texto-tenue">
           Las lecturas tienen ruido. Puedes afinar un sensor por turno para ver su valor real; cuesta{' '}
           {costoAfinar} de energía.
         </p>
@@ -128,7 +128,7 @@ function Decision() {
         <h3 id="titulo-efectores" className="text-lg font-semibold">
           Efectores
         </h3>
-        <p className="text-sm text-slate-400">{instruccion}</p>
+        <p className="text-sm text-texto-tenue">{instruccion}</p>
       </div>
       <Sintomas />
       <MensajeError mensaje={errorEfectores} />
@@ -142,9 +142,9 @@ function Decision() {
           />
         ))}
       </div>
-      <div className="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-slate-800 bg-slate-950/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
+      <div className="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-borde bg-fondo/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
         <MensajeError mensaje={errorDecision} />
-        {motivo && <p className="text-sm text-slate-400">{motivo}</p>}
+        {motivo && <p className="text-sm text-texto-tenue">{motivo}</p>}
         <Boton anchoCompleto onClick={confirmarDecision} disabled={validacion?.valida !== true}>
           Confirmar decisión
         </Boton>

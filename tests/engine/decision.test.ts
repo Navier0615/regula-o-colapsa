@@ -58,7 +58,8 @@ describe('validarDecision', () => {
     expect(validarDecision(agotado, ['beber'])).toEqual({ valida: true })
     const resultado = validarDecision(agotado, ['beber', 'comer'])
     expect(resultado.valida).toBe(false)
-    expect(resultado.valida === false && resultado.motivo).toContain('Agotamiento')
+    expect(resultado.valida === false && resultado.motivo).toBe('Tu organismo está agotado: solo puedes activar 1 efector')
+    expect(resultado.valida === false && resultado.motivo).not.toMatch(/[≤<>=]|energía/)
   })
 
   it('con agotamiento permite descansar', () => {

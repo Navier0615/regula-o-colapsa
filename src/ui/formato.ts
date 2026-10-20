@@ -1,5 +1,4 @@
-import type { Cambio } from '../state/selectors.ts'
-import type { Zona } from '../state/selectors.ts'
+import type { Cambio, Zona } from '../state/selectors.ts'
 
 // Formato de presentación compartido por los componentes. Sin reglas del juego.
 
@@ -15,24 +14,32 @@ export function formatearCambio(cambio: Cambio): string {
   return `${cambio.nombre} ${formatearDelta(cambio.delta)}`
 }
 
-/** Clases por zona: el color siempre acompaña al texto de la zona. */
-export const ESTILOS_ZONA: Readonly<Record<Zona, { punto: string; texto: string; fondo: string; borde: string }>> = {
+/** Clases por zona (tokens de tema): el color siempre acompaña al texto de la zona. */
+export const ESTILOS_ZONA: Readonly<
+  Record<Zona, { punto: string; texto: string; escala: string; borde: string; suave: string }>
+> = {
   verde: {
-    punto: 'bg-emerald-400',
-    texto: 'text-emerald-300',
-    fondo: 'bg-emerald-500/25',
-    borde: 'border-emerald-500/40',
+    punto: 'bg-zona-verde',
+    texto: 'text-zona-verde-texto',
+    escala: 'bg-zona-verde/40',
+    borde: 'border-zona-verde/50',
+    suave: 'bg-zona-verde-suave',
   },
   amarilla: {
-    punto: 'bg-amber-400',
-    texto: 'text-amber-300',
-    fondo: 'bg-amber-500/25',
-    borde: 'border-amber-500/40',
+    punto: 'bg-zona-amarilla',
+    texto: 'text-zona-amarilla-texto',
+    escala: 'bg-zona-amarilla/40',
+    borde: 'border-zona-amarilla/50',
+    suave: 'bg-zona-amarilla-suave',
   },
   roja: {
-    punto: 'bg-rose-500',
-    texto: 'text-rose-300',
-    fondo: 'bg-rose-500/25',
-    borde: 'border-rose-500/40',
+    punto: 'bg-zona-roja',
+    texto: 'text-zona-roja-texto',
+    escala: 'bg-zona-roja/40',
+    borde: 'border-zona-roja/50',
+    suave: 'bg-zona-roja-suave',
   },
 }
+
+/** Etiqueta de zona con punto de color y texto (verde / alerta / crisis). */
+export const CLASES_ETIQUETA_ZONA = 'inline-flex items-center gap-1.5 text-sm font-medium'

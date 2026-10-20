@@ -6,10 +6,10 @@ interface Props {
 
 export default function Ranking({ filas }: Props) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-800">
+    <div className="overflow-x-auto rounded-2xl border border-borde bg-superficie">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">Clasificación final</caption>
-        <thead className="bg-slate-900 text-slate-400">
+        <thead className="bg-elevado/60 text-texto-tenue">
           <tr>
             <th scope="col" className="px-3 py-2 font-medium">#</th>
             <th scope="col" className="px-3 py-2 font-medium">Jugador</th>
@@ -20,13 +20,13 @@ export default function Ranking({ filas }: Props) {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800">
+        <tbody className="divide-y divide-borde">
           {filas.map((fila) => (
-            <tr key={fila.nombre + fila.posicion} className={fila.posicion === 1 ? 'bg-sky-950/40' : ''}>
+            <tr key={fila.nombre + fila.posicion} className={fila.posicion === 1 ? 'bg-acento-suave' : ''}>
               <td className="px-3 py-2 font-semibold">{fila.posicion}</td>
               <td className="px-3 py-2">
                 <span className="block font-semibold">{fila.nombre}</span>
-                <span className="block text-xs text-slate-400">
+                <span className="block text-xs text-texto-tenue">
                   {fila.colapsado ? `Colapsó en el turno ${fila.turnosJugados}` : 'Completó el día'}
                 </span>
               </td>

@@ -18,7 +18,7 @@ function PartidaEnCurso() {
     return null
   }
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-sky-500/40 bg-sky-950/30 p-4">
+    <section className="flex flex-col gap-3 rounded-2xl border border-acento/50 bg-acento-suave p-4">
       <p>
         Tienes una partida en curso (código <span className="font-mono">{codigo}</span>).
       </p>
@@ -53,7 +53,7 @@ export default function InicioPage() {
     <div className="mx-auto flex max-w-xl flex-col gap-8 py-6">
       <header className="flex flex-col gap-3 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Regula o Colapsa</h1>
-        <p className="text-slate-300">
+        <p className="text-texto-suave">
           Eres el centro de control de un organismo humano. Mantén temperatura, glucosa, hidratación y energía en
           equilibrio durante un día de {REGLAS_VISIBLES.totalTurnos} turnos.
         </p>
@@ -66,11 +66,11 @@ export default function InicioPage() {
 
       <PartidaEnCurso />
 
-      <form onSubmit={enviar} className="flex flex-col gap-6 rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
+      <form onSubmit={enviar} className="flex flex-col gap-6 rounded-2xl border border-borde bg-superficie p-4 sm:p-6">
         <h2 className="text-xl font-bold">Nueva partida</h2>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-medium text-slate-300">Jugadores</legend>
+          <legend className="mb-2 text-sm font-medium text-texto-suave">Jugadores</legend>
           <div className="grid grid-cols-4 gap-2">
             {CANTIDADES.map((n) => (
               <button
@@ -79,14 +79,14 @@ export default function InicioPage() {
                 aria-pressed={cantidad === n}
                 onClick={() => setCantidad(n)}
                 className={`min-h-11 rounded-xl text-sm font-semibold ring-1 transition-colors ${
-                  cantidad === n ? 'bg-sky-400 text-slate-950 ring-sky-400' : 'bg-slate-800 ring-slate-700 hover:bg-slate-700'
+                  cantidad === n ? 'bg-acento text-sobre-acento ring-acento' : 'bg-elevado ring-borde hover:bg-elevado-hover'
                 }`}
               >
                 {n === LIMITES.min ? 'Solitario' : n}
               </button>
             ))}
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-texto-tenue">
             {cantidad === LIMITES.min
               ? `Meta: ${REGLAS_VISIBLES.puntajeVictoria} puntos o más sin colapsar.`
               : 'Se juega por turnos en este dispositivo. Gana el mayor puntaje.'}
@@ -95,20 +95,20 @@ export default function InicioPage() {
 
         <div className="flex flex-col gap-3">
           {Array.from({ length: cantidad }, (_, i) => (
-            <label key={i} className="flex flex-col gap-1 text-sm font-medium text-slate-300">
+            <label key={i} className="flex flex-col gap-1 text-sm font-medium text-texto-suave">
               {cantidad === LIMITES.min ? 'Tu nombre' : `Nombre del jugador ${i + 1}`}
               <input
                 value={nombres[i]}
                 maxLength={20}
                 onChange={(e) => setNombres((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))}
-                className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-3 text-base text-slate-100"
+                className="min-h-11 rounded-xl border border-borde-fuerte bg-fondo px-3 text-base text-texto"
               />
             </label>
           ))}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="codigo" className="text-sm font-medium text-slate-300">
+          <label htmlFor="codigo" className="text-sm font-medium text-texto-suave">
             Código de partida
           </label>
           <div className="flex gap-2">
@@ -120,13 +120,13 @@ export default function InicioPage() {
               autoComplete="off"
               spellCheck={false}
               aria-describedby="ayuda-codigo"
-              className="min-h-11 min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 font-mono text-base tracking-wider text-slate-100 uppercase"
+              className="min-h-11 min-w-0 flex-1 rounded-xl border border-borde-fuerte bg-fondo px-3 font-mono text-base tracking-wider text-texto uppercase"
             />
             <Boton variante="secundario" onClick={() => setCodigo(generarCodigo())}>
               Nuevo
             </Boton>
           </div>
-          <p id="ayuda-codigo" className="text-sm text-slate-400">
+          <p id="ayuda-codigo" className="text-sm text-texto-tenue">
             Con el mismo código se juega la misma partida en cualquier dispositivo.
           </p>
         </div>

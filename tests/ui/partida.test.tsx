@@ -71,6 +71,16 @@ describe('PantallaTurno', () => {
     fireEvent.click(boton(/^Liberar insulina/))
     fireEvent.click(boton('Confirmar decisión'))
     expect(screen.getByText('Bucles de retroalimentación')).toBeInTheDocument()
+
+    // Retroalimentación: zona final de cada variable con texto, sin valores numéricos.
+    const estado = screen.getByRole('region', { name: 'Estado final del organismo' })
+    const zonas = within(estado).getAllByRole('listitem')
+    expect(zonas).toHaveLength(4)
+    zonas.forEach((zona) => {
+      expect(zona.textContent).toMatch(/verde|alerta|crisis/)
+      expect(zona.textContent).not.toMatch(/\d/)
+    })
+
     fireEvent.click(boton('Continuar'))
 
     expect(screen.getByRole('heading', { name: 'Turno de Beto' })).toBeInTheDocument()
@@ -105,8 +115,9 @@ describe('PantallaTurno', () => {
     expect(boton('Confirmar decisión')).toBeEnabled()
 
     fireEvent.click(boton('Afinar sensor de Temperatura (cuesta 1 de energía)'))
-    expect(screen.getByText('Tu organismo está agotado: solo puedes activar 1 efector')).toBeInTheDocument()
-    expect(screen.getByText(/Agotamiento: con energía/)).toBeInTheDocument()
+    // Síntoma en el aviso de los efectores y como motivo junto al botón de confirmar.
+    expect(screen.getAllByText('Tu organismo está agotado: solo puedes activar 1 efector')).toHaveLength(2)
+    expect(screen.queryByText(/≤/)).not.toBeInTheDocument()
     expect(boton('Confirmar decisión')).toBeDisabled()
   })
 

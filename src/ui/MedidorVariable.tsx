@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { VistaMedidor } from '../state/selectors.ts'
-import { ESTILOS_ZONA } from './formato.ts'
+import { CLASES_ETIQUETA_ZONA, ESTILOS_ZONA } from './formato.ts'
 
 interface Props {
   medidor: VistaMedidor
@@ -21,10 +21,10 @@ export default function MedidorVariable({ medidor, rango, intervalos, children }
   const texto = afinada ? `= ${valor} real` : `≈ ${valor} ±${margen}`
 
   return (
-    <article className={`flex flex-col gap-3 rounded-2xl border bg-slate-900 p-4 ${estilo.borde}`}>
+    <article className={`flex flex-col gap-3 rounded-2xl border bg-superficie p-4 ${estilo.borde}`}>
       <div className="flex items-center justify-between gap-2">
         <h4 className="font-semibold">{nombre}</h4>
-        <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${estilo.texto}`}>
+        <span className={`${CLASES_ETIQUETA_ZONA} ${estilo.texto}`}>
           <span aria-hidden="true" className={`size-2.5 rounded-full ${estilo.punto}`} />
           {etiquetaZona}
         </span>
@@ -39,19 +39,19 @@ export default function MedidorVariable({ medidor, rango, intervalos, children }
           {intervalos.map((tramo) => (
             <div
               key={`${tramo.zona}-${tramo.min}`}
-              className={ESTILOS_ZONA[tramo.zona].fondo}
+              className={ESTILOS_ZONA[tramo.zona].escala}
               style={{ flexGrow: tramo.max - tramo.min + 1 }}
             />
           ))}
         </div>
         {!afinada && (
           <div
-            className="absolute -inset-y-0.5 rounded-full bg-slate-100/20 ring-1 ring-slate-100/40"
+            className="absolute -inset-y-0.5 rounded-full bg-texto/15 ring-1 ring-texto/40"
             style={{ left: `${porcentaje(desde) - 50 / pasos}%`, right: `${100 - porcentaje(hasta) - 50 / pasos}%` }}
           />
         )}
         <div
-          className="absolute -inset-y-1 w-1 -translate-x-1/2 rounded-full bg-slate-50"
+          className="absolute -inset-y-1 w-1 -translate-x-1/2 rounded-full bg-texto"
           style={{ left: `${porcentaje(valor)}%` }}
         />
       </div>
